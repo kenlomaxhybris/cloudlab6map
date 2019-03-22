@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Map </title>
+  <style>
+    #map {
+      height:100vh;
+      }
+  </style>
+</head>
+<body>   
+    <div id="map" height=100%></div>
+    <script>
+      let googlemap = "notyetdefined"
+      let geocoder = "notyetdefined" 
+      var url = new URL(window.location.href);
+      const END_POINT= url.searchParams.get("END_POINT");
+
+      function initMap() {   
+        googlemap = new google.maps.Map(document.getElementById('map'), { zoom: 1 });
+        geocoder = new google.maps.Geocoder();    
+        const xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            const orders = JSON.parse(this.response)
+            orders.forEach(order => {
+              const address = order["postalCode"]+","+order["town"]
+              geocoder.geocode({'address': address}, function(results, status) {
+                if (status === 'OK') {
+                  var location = results[0].geometry.location           
+                  var marker = new google.maps.Marker({
+                    map: googlemap,
+                    position: location
+                  });
+                  googlemap.setCenter(location);              
+                } 
+              });
+            });
+          }
+        };
+        xhttp.open("GET", END_POINT, true);
+        xhttp.send();
+      }
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDxiCsppixuZDOQqq4yRz4YunEG-Ubbi4A&callback=initMap">
+  </script>
+</body>
+</html>
