@@ -1,0 +1,27 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: cloudlab620190321
+spec:
+  selector:
+    app: cloudlab620190321
+  type: LoadBalancer
+ 
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: cloudlab620190321
+spec:
+  replicas: 4
+  template:
+    metadata:
+      labels:
+        app: cloudlab620190321
+    spec:
+      containers:
+        - name: cloudlab620190321
+          image: kenlomax/cloudlab620190321:latest
+          imagePullPolicy: Always
+        
