@@ -14,7 +14,7 @@ kind: Deployment
 metadata:
   name: cloudlab620190321
 spec:
-  replicas: 4
+  replicas: 2
   template:
     metadata:
       labels:

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Map </title>
+  <style>
+    #map {
+      height:100vh;
+      }
+  </style>
+</head>
+<body>   
+    <div id="map" height=100%></div>
+    <script>
+      let googlemap = "notyetdefined"
+      let geocoder = "notyetdefined" 
+      var url = new URL(window.location.href);
+      const END_POINT= url.searchParams.get("END_POINT");
+      var xhttp = new XMLHttpRequest();
+      var markers = []
+
+      function fillMap(res) {   
+        console.log("In setMap")
+        const orders = JSON.parse(res)
+        orders.forEach(order => {
+          const address = order["postalCode"]+","+order["town"]
+          geocoder.geocode({'address': address}, function(results, status) {
+            if (status === 'OK') {
+              var location = results[0].geometry.location           
+              var marker = new google.maps.Marker({
+                map: googlemap,
+                position: location
+              });
+              markers.push(marker)
+              googlemap.setCenter(location);              
+            } 
+          });
+        });
+      }
+
+      function setupMap(){
+        markers.forEach(m=>{
+          m.setMap(null);
+        })
+        markers = []
+
+        googlemap = new google.maps.Map(document.getElementById('map'), { zoom: 1 });
+        geocoder = new google.maps.Geocoder();         
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            fillMap(this.response);   
+          }
+        };
+        xhttp.open("GET", END_POINT, true);
+        xhttp.send();
+      }
+
+      function initMap() {   
+        setupMap()
+        setInterval(setupMap, 5000);
+      }
+
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATSlxGaE4gWZO_kDuwgVbSWj6lH7ChYE4&callback=initMap">
+  </script>
+</body>
+</html>
