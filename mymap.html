@@ -23,18 +23,21 @@
         xhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
             const orders = JSON.parse(this.response)
-            orders.forEach(order => {
-              const address = order["postalCode"]+","+order["town"]
-              geocoder.geocode({'address': address}, function(results, status) {
-                if (status === 'OK') {
-                  var location = results[0].geometry.location           
-                  var marker = new google.maps.Marker({
-                    map: googlemap,
-                    position: location
-                  });
-                  googlemap.setCenter(location);              
-                } 
-              });
+            if (orders.length==0)
+              googlemap.setCenter( {lat:0,lng:0} );     
+            else
+              orders.forEach(order => {
+                const address = order["postalCode"]+","+order["town"]
+                geocoder.geocode({'address': address}, function(results, status) {
+                  if (status === 'OK') {
+                    var location = results[0].geometry.location           
+                    var marker = new google.maps.Marker({
+                      map: googlemap,
+                      position: location
+                    });
+                    googlemap.setCenter(location);              
+                  } 
+                });
             });
           }
         };
