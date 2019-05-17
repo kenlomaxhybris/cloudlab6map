@@ -2,26 +2,34 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: cloudlab620190321
+  name: cloudlab1service
 spec:
   selector:
-    app: cloudlab620190321
+    app: myapp
+  ports:
+    - protocol: "TCP"
+      # Port accessible inside cluster
+      port: 8081
+      # Port to forward to inside the pod
+      targetPort: 8080
+      # Port accessible outside cluster
+      nodePort: 30002
   type: LoadBalancer
  
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: cloudlab620190321
+  name: mycloudlab1deployment
 spec:
   replicas: 2
   template:
     metadata:
       labels:
-        app: cloudlab620190321
+        app: myapp
     spec:
       containers:
-        - name: cloudlab620190321
-          image: kenlomax/cloudlab620190321:latest
-          imagePullPolicy: Always
-        
+        - name: myapp
+          image: kenlomax/cloudlab620190321:v3
+          ports:
+            - containerPort: 8080
